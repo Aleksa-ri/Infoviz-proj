@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Kaiserhof</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css' rel='stylesheet' />
+	<script type="text/javascript" language="javascript" src="jquery.js"></script>        
+	<script type="text/javascript" language="javascript" src="kaiserhof.json"></script> 
+    <link href='slider.css' rel='stylesheet' />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+		
+		
+		.mapboxgl-popup {
+			max-width: 200px;
+		}
+
+		.mapboxgl-popup-content {
+			text-align: center;
+			font-family: 'Open Sans', sans-serif;
+		}
+		
+        .marker {
+            width:12px;
+            height:12px;
+            border:2px solid #fff;
+            border-radius:50%;
+            background:#3887be;
+			cursor: pointer;
+        }
+        .marker-red {
+            width:12px;
+            height:12px;
+            border:2px solid #fff;
+            border-radius:50%;
+            background:#be384e;
+			cursor: pointer;
+        }
+		
+        
+    </style>
+
+</head>
+
+<body>
+    
+    <div id='map' background-color: '#FFF;'>
+        <input id="slider" type="range" orient="horizontal" 
+        name="Timeline"  min="1527" value="1527" max="1705" 
+        step="1" onchange="displayBirth(this.value);"  />
+	  
+	    <input id="year" type="number" value="1698" onchange="displayBirth(this.value);" /> 
+        <div id="menu" background-color: '#FFF;'>
+        <input id="light-v10" type="radio" name="rtoggle" value="light" />
+        <label for="light">Geburten</label>
+        <input id="dark-v10" type="radio" name="rtoggle" value="dark" />
+        <label for="dark">Todesfälle</label>
+        </div>
+    </div>
+
+    <script>
+var c = {"F1":"red-dot","M2":"yellow-dot","R2":"green-dot","MS":"pink-dot","F2":"red-dot","F3":"blue-dot","L1":"orange-dot"};
+
+  function displayBirth(y) {
+        displaySlider(y);
+		
+        for (var i =0; i<p.length; i++) {
+            b = p[i][0];
+            console.log(b == y);
+            if (p[i][0] <= y && y <= p[i][1] ) { //&& y <= p[i][1] 
+            //x += "
+            k[i].addTo(map);
+            } else {
+            k[i].remove();
+            }
+        }
+       //setTimeout(x, 100); 
+    }
+
+    function displayDeath(y) { //analog
+        displaySlider(y);
+		
+        for (var i =0; i<p.length; i++) {
+            b = p[i][0];
+            console.log(b == y);
+            if (p[i][0] === y ) { //&& y <= p[i][1] 
+            //x += "
+            k[i].addTo(map);
+            } else {
+            k[i].remove();
+            }
+        }
+       //setTimeout(x, 100); 
+    }
+
+    function displayBoth(y) {
+        displaySlider(y);
+		displayBirth(y);
+        displayDeath(y);
+    }
+    var layerList = document.getElementById('menu');
+    var inputs = layerList.getElementsByTagName('input');
+ 
+    function switchLayer(layer) {
+    var layerId = layer.target.id;
+    map.setStyle('mapbox://styles/mapbox/' + layerId);
+    console.log(layerId);
+    
+ 
+    for (var i = 0; i < inputs.length; i++) {
+    inputs[i].onclick = switchLayer;
+    if (layerId == "light-v10"){
+        displayBirth(y);
+    } else(layerId == "dark-v10")  
+        displayDeath(y);
+    
+
+    } 
+}
+		/*
+		console.log(p[0]);
+        console.log(p[2]);
+        console.log(p[3][4]);
+        console.log(p[1].length);
+        console.log(p.length);
+		*/
+        
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYTE0a3AiLCJhIjoiY2sya2pmcjVkMGZ6cjNvcXA5YjJ6eXhheSJ9.fB2VLxGQ5qpycQ-6XFKADg';
+        var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/mapbox/light-v10', // stylesheet location
+            center: [11.58, 48.14], // starting position [lng, lat]
+            zoom: 4 // starting zoom
+        });
+      
+    function displaySlider(y) {
+        if (y > 1705) y = 1527;
+
+		console.log("display:"+y) 
+	    document.getElementById("slider").value = y;
+        document.getElementById("slider").title = y;
+        document.getElementById("year").value= y;
+        //var x = "";
+    }
+
+    
+  var k=Array(p.length);
+  
+  for (var i =0; i<p.length; i++) {
+      // "marker-symbol": "monument",
+	  // { icon: 'circle', color: 'blue', source: ""   iconSize: [5, 5] }
+	  var marker = document.createElement('div');
+      marker.classList = 'marker';
+	  //marker
+	  var popup = new mapboxgl.Popup({offset: 25})   // .setText(''+p[i][2]+'  '+p[i][3]+'  '+p[i][6]+'  ');
+	  .setHTML('<h3>' +p[i][2]+'</h3>'+p[i][7]);
+
+		// { icon: 'circle', color: 'blue'}
+		// marker
+		 // { icon: 'radius', color: 'green', offset:7, rotation:1}
+      // k[i]=new mapboxgl.Marker( ).setLngLat([p[i][5], p[i][4]]).setPopup(popup);
+	  k[i]=new mapboxgl.Marker( marker ).setLngLat([p[i][5], p[i][4]]).setPopup(popup).addTo(map);
+	
+  }
+  
+
+  
+       map.on('load', function() {
+	   
+	 
+
+                displayBirth(document.getElementById("year").value);
+            
+       });   
+           
+
+    </script>
+
+</body>
+
+</html>
