@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Kaiserhof</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.5.0/mapbox-gl.css' rel='stylesheet' />
+	<script type="text/javascript" language="javascript" src="jquery.js"></script>        
+	<script type="text/javascript" language="javascript" src="kaiserhof.json"></script> 
+    <link href='slider.css' rel='stylesheet' />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+		
+		
+		.mapboxgl-popup {
+			max-width: 200px;
+		}
+
+		.mapboxgl-popup-content {
+			text-align: center;
+			font-family: 'Open Sans', sans-serif;
+		}
+		
+        .marker2 {
+            width:16px;
+            height:16px;
+            border:2px solid #fff;
+            border-radius:10%;
+            background: url('./kreuz4.png');
+			cursor: pointer;
+        }
+		.marker1 {
+            width:16px;
+            height:16px;
+            border:2px solid #fff;
+            border-radius:10%;
+            background: url('./star3.png');
+			cursor: pointer;
+        }
+		
+        
+    </style>
+
+</head>
+
+<body>
+    
+    <div id='map' >
+        <input id="slider" type="range" orient="horizontal" 
+        name="Timeline"  min="1527" value="1527" max="1705" 
+        step="1" onchange="display(this.value);"  />
+	  
+	    <input id="year" type="number" value="1620" onchange="display(this.value);" />
+ <div background-color: '#FFF;'>
+            <input id="light-v10" type="radio" name="rtoggle" value="light" checked onclick="switchLayer(this.id)"/>
+            <label for="light">Geburten</label>
+        
+            <input id="dark-v10" type="radio" name="rtoggle" value="dark" onclick="switchLayer(this.id)"/>
+            <label for="dark">Todesfälle</label>
+        </div>		
+    </div>
+
+    <script>
+ for (var i =0; i<p.length; i++) {
+   var str = p[i][7];
+   var l = str.length; 
+   p[i][10]= parseInt(str.substr(l-10,4));
+   p[i][11]= parseInt(str.substr(l- 5,4));
+   if( Number.isNaN(p[i][11])) {
+      p[i][11]= p[i][1] 
+   }
+   //console.log( ""+p[i][10]+"  "+p[i][11]);
+}	
+	
+      function switchLayer(layerId) {
+        var yearToBeDisplayed = document.getElementById("slider").value;
+        map.setStyle('mapbox://styles/mapbox/' + layerId);
+
+        display(yearToBeDisplayed);
+        }
+      
+  function display(y) {
+        if (y > 1705) y = 1527;
+		
+		 var modi = document.getElementById("light-v10").checked;
+		 var idx = modi ? 10 : 11;
+
+
+		console.log("display:"+y) 
+	    document.getElementById("slider").value = y;
+        document.getElementById("slider").title = y;
+        document.getElementById("year").value= y;
+        //var x = "";
+		
+        for (var i =0; i<p.length; i++) {
+            if (p[i][idx] == y ) { 
+               k[i].addTo(map);
+			   divMarker  = k[i].getElement();
+			   divMarker.classList = modi ? 'marker1':'marker2';
+            } else {
+               k[i].remove();
+            }
+			/* interval 
+			  if (p[i][0] <= y && y <= p[i][1]) { 
+               k[i].addTo(map);
+            } else {
+               k[i].remove();
+            } */
+        }
+       //setTimeout(x, 100); 
+    }
+      
+  
+		/*
+		console.log(p[0]);
+        console.log(p[2]);
+        console.log(p[3][4]);
+        console.log(p[1].length);
+        console.log(p.length);
+		*/
+        
+        mapboxgl.accessToken = 'pk.eyJ1IjoiYTE0a3AiLCJhIjoiY2sya2pmcjVkMGZ6cjNvcXA5YjJ6eXhheSJ9.fB2VLxGQ5qpycQ-6XFKADg';
+        var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/mapbox/light-v10', // stylesheet location
+            center: [11.58, 48.14], // starting position [lng, lat]
+            zoom: 4 // starting zoom
+        });
+      
+
+    
+  var k=Array(p.length);
+  
+  for (var i =0; i<p.length; i++) {
+      // "marker-symbol": "monument",
+	  // { icon: 'circle', color: 'blue', source: ""   iconSize: [5, 5] }
+	  var divMarker = document.createElement('div');
+      divMarker.classList = 'marker2';
+	  
+	  
+	  //marker
+	  var popup = new mapboxgl.Popup({offset: 15})   // .setText(''+p[i][2]+'  '+p[i][3]+'  '+p[i][6]+'  ');
+	  .setHTML('<h3>' +p[i][2]+'</h3>'+p[i][7]);
+
+		// { icon: 'circle', color: 'blue'}
+		// marker
+		 // { icon: 'radius', color: 'green', offset:7, rotation:1}
+      // k[i]=new mapboxgl.Marker( ).setLngLat([p[i][5], p[i][4]]).setPopup(popup);
+	  k[i]=new mapboxgl.Marker( divMarker ).setLngLat([p[i][5], p[i][4]]).setPopup(popup).addTo(map);
+
+  }
+ 
+  
+       map.on('load', function() {
+	   
+	 
+
+                display(document.getElementById("year").value);
+            
+         
+        });
+	    
+
+    </script>
+
+</body>
+
+</html>
